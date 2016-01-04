@@ -1,0 +1,27 @@
+{
+  "name": "jschessrulz",
+  "version": "0.5.0",
+  "description": "JavaScript chess rules library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Humakt83/jschessrulz.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "chess",
+    "library"
+  ],
+  "author": "Risto Salama",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/Humakt83/jschessrulz/issues"
+  },
+  "homepage": "https://github.com/Humakt83/jschessrulz#readme",
+  "dependencies": {
+    "lodash": "^3.10.1"
+  }
+}
