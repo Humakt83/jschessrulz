@@ -15,7 +15,7 @@
     "chess",
     "library"
   ],
-  "author": "Risto Salama",
+  "author": "Risto <Humakt83> Salama (http://ukkosnetti.fi)",
   "license": "GPL-2.0",
   "bugs": {
     "url": "https://github.com/Humakt83/jschessrulz/issues"
@@ -23,5 +23,8 @@
   "homepage": "https://github.com/Humakt83/jschessrulz#readme",
   "dependencies": {
     "lodash": "^3.10.1"
+  },
+  "devDependencies": {
+    "babelify": "^7.2.0"
   }
 }
