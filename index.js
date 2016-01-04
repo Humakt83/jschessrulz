@@ -225,7 +225,7 @@ class Chess {
 }
 
 module.exports = {
-	chess: Chess,
+	Chess: Chess,
 	Piece: ChessPiece,
 	Position: Position
 }
