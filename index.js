@@ -1,8 +1,8 @@
 'use strict'
 
 import _ from 'lodash'
-import ChessPiece from 'pieces'
-import Position from 'position'
+import ChessPiece from './pieces'
+import Position from './position'
 
 const xMin = 0, yMin = 0, xMax = 7, yMax = 7
 
@@ -224,4 +224,8 @@ class Chess {
 	}
 }
 
-module.exports = Chess
+module.exports = {
+	chess: Chess,
+	piece: ChessPiece,
+	position: Position
+}
