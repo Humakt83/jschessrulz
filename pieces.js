@@ -27,6 +27,7 @@ var filterMovesThatCollideWithOwnPiece = function(moves, whitePiece, chess) {
 }
 
 var filterMovesThatCauseMate = function(moves, whitePiece, chess) {
+	if (chess.aiTurn) return moves
 	var pieceToLookFor = whitePiece ? 6 : -6
 	return _.compact(_.filter(moves, function(move) {
 		if (chess.doNotCheckForCheck) return true
