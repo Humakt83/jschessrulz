@@ -1,6 +1,6 @@
 {
   "name": "jschessrulz",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "JavaScript chess rules library",
   "main": "index.js",
   "scripts": {
