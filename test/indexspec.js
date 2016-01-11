@@ -30,4 +30,10 @@ describe('Chess', function() {
     chess.setAllowedMoves()
     chess.isStaleMate().should.equal(true)
   })
+
+  it('Is neither checkmate or stalemate', function() {
+    let chess = new index.Chess()
+    chess.isStaleMate().should.equal(false)
+    chess.isCheckMate().should.equal(false)
+  })
 })
