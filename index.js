@@ -176,7 +176,22 @@ class Chess {
 		this.turnOfWhite = !this.turnOfWhite
 		var futureMoves = this.getFutureMoves()
 		this.turnOfWhite = !this.turnOfWhite
-		return futureMoves.length > 0 && this.allowedMoves.length <= 0
+		var kingToFind = this.turnOfWhite ? 6 : -6
+		var noKing = _.chain(futureMoves)
+			.flatten()
+			.map(function(move) {
+				return move.boardAfterMove
+			})
+			.map(function(board) {
+				return _.reduce(board, function(a, b) {
+					return a.concat(b)
+				})
+			})
+			.filter(function(board) { 
+				return !_.find(board, function(piece) { return kingToFind == piece })
+			})
+			.value().length > 0
+		return noKing && this.allowedMoves.length <= 0
 	}
 	
 	isInsufficientMaterial() {
