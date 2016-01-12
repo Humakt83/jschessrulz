@@ -174,10 +174,10 @@ class Chess {
 		
 	isCheckMate() {
 		this.turnOfWhite = !this.turnOfWhite
-		var futureMoves = this.getFutureMoves()
+		let futureMoves = this.getFutureMoves()
 		this.turnOfWhite = !this.turnOfWhite
-		var kingToFind = this.turnOfWhite ? 6 : -6
-		var noKing = _.chain(futureMoves)
+		let kingToFind = this.turnOfWhite ? 6 : -6
+		let noKing = _.chain(futureMoves)
 			.flatten()
 			.map(function(move) {
 				return move.boardAfterMove

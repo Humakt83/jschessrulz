@@ -36,4 +36,56 @@ describe('Chess', function() {
     chess.isStaleMate().should.equal(false)
     chess.isCheckMate().should.equal(false)
   })
+
+  it('King is not allowed to castle when threatened', function() {
+    let chess = new index.Chess()
+    chess.board = [[ -6, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, -1, 0, 0, 0 ],
+        [ 0, 0, 0, -1, -4, -1, 0, 0 ],
+        [ 0, 0, 0, 1, 0, 1, 0, 1 ],
+        [ 0, 0, 0, 0, 6, 0, 0, 4 ]]
+    index.Piece.getMoves(6, new index.Position(4, 7), chess).length.should.equal(2)
+  })
+
+  it('King is not allowed to castle when line is threatened', function() {
+    let chess = new index.Chess()
+    chess.board = [[ -6, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, -4, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 0, 0, 0, 0, 6, 0, 0, 4 ]]
+    index.Piece.getMoves(6, new index.Position(4, 7), chess).length.should.equal(3)
+  })
+
+  it('King is not allowed to make long castle when line is threatened', function() {
+    let chess = new index.Chess()
+    chess.board = [[ -6, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, -4, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 4, 0, 0, 0, 6, 0, 0, 0 ]]
+    index.Piece.getMoves(6, new index.Position(4, 7), chess).length.should.equal(5)
+  })
+
+  it('King is allowed to castle when unthreatened', function() {
+    let chess = new index.Chess()
+    chess.board = [[ -6, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, -4, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 0, 0, 0, 0, 6, 0, 0, 4 ]]
+    index.Piece.getMoves(6, new index.Position(4, 7), chess).length.should.equal(4)
+  })
 })
