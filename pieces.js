@@ -171,7 +171,7 @@ var getKingMoves = function(position, piece, chess, whitePiece) {
 		var leftRookMoved = chess.castlingMoveMadeOfType(whitePiece ? 'WHITE_LEFT_ROOK_MOVED' : 'BLACK_LEFT_ROOK_MOVED')
 		var rightRookMoved = chess.castlingMoveMadeOfType(whitePiece ? 'WHITE_RIGHT_ROOK_MOVED' : 'BLACK_RIGHT_ROOK_MOVED')
 		if (rookLeft === rook && !leftRookMoved && chess.getSlot(position.newPosition(-1,0)) === 0 && chess.getSlot(position.newPosition(-2,0)) === 0 && chess.getSlot(position.newPosition(-3,0)) === 0) {
-			if (!positionCanBeReachedByEnemy([position, position.newPosition(-1,0), position.newPosition(-2, 0), position.newPosition(-3,0)])) {
+			if (chess.doNotCheckForCheck || !positionCanBeReachedByEnemy([position, position.newPosition(-1,0), position.newPosition(-2, 0), position.newPosition(-3,0)])) {
 				toweringMoves.push(new Move(piece, position, position.newPosition(-2,0), chess, function() {
 					chess.board[rookLeftPosition.y][rookLeftPosition.x] = 0
 					var newRookPosition = rookLeftPosition.newPosition(3, 0)
@@ -180,7 +180,7 @@ var getKingMoves = function(position, piece, chess, whitePiece) {
 			}
 		}
 		if (rookRight === rook && !rightRookMoved && chess.getSlot(position.newPosition(1,0)) === 0 && chess.getSlot(position.newPosition(2,0)) === 0) {
-			if (!positionCanBeReachedByEnemy([position, position.newPosition(1,0), position.newPosition(2, 0)])) {
+			if (chess.doNotCheckForCheck || !positionCanBeReachedByEnemy([position, position.newPosition(1,0), position.newPosition(2, 0)])) {
 				toweringMoves.push(new Move(piece, position, position.newPosition(2,0), chess, function() {
 					chess.board[rookRightPosition.y][rookRightPosition.x] = 0
 					var newRookPosition = rookRightPosition.newPosition(-2, 0)
