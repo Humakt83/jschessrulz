@@ -94,7 +94,7 @@ class Chess {
 		}
 		return futureMoves
 	}
-		
+	
 	setAllowedMoves() {
 		this.allowedMoves = []
 		for (var y = 0; y <= yMax; y++) {
