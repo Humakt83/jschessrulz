@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Humakt83/jschessrulz.svg?branch=master)](https://travis-ci.org/Humakt83/jschessrulz)
+
 # jschessrulz
 JavaScript chess rules library
 
