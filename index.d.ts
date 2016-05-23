@@ -1,20 +1,20 @@
-interface Move {}
+export interface Move {}
 
-interface Chess {
+export interface Chess {
 
     getSlot(position: Position): number;
     
     pawnIsLeveled: boolean;
     
-    movePiece(from: Position, to: Position);
+    movePiece(from: Position, to: Position): void;
     
-    makeMove(move: Move, doNotSetMoves: boolean);
+    makeMove(move: Move, doNotSetMoves: boolean): void;
     
-    makeAIMove(board: number[][]);
+    makeAIMove(board: number[][]): void;
     
     getFutureMoves: Move[];
     
-    setAllowedMoves;
+    setAllowedMoves: void;
     
     boardAfterMove(from: Position, to: Position): number[][];
     
@@ -28,7 +28,7 @@ interface Chess {
     
     canSetSelected(x: number, y: number): boolean;
     
-    undoMove(doNotSetMoves: boolean);
+    undoMove(doNotSetMoves: boolean): void;
     
     getWhitePieces: number[];
     
@@ -46,7 +46,7 @@ interface Chess {
     
     isGameOver: boolean;
     
-    setSelected(x: number, y: number);
+    setSelected(x: number, y: number): void;
     
     getCastlingState: any;
     
@@ -54,13 +54,13 @@ interface Chess {
     
 }
 
-interface Position {
+export interface Position {
         
-    newPosition(xModifier: number, yModifier, number): Position;
+    newPosition(xModifier: number, yModifier: number): Position;
     
 }
 
-interface ChessPiece {
+export interface ChessPiece {
     
     createPawn(whitePiece: boolean) : number;
     
@@ -76,6 +76,6 @@ interface ChessPiece {
     
     getMoves(piece : number, position: Position, chess: Chess): Move[];
     
-    getCssName(piece: number);
+    getCssName(piece: number): string;
 
 }
