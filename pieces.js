@@ -34,7 +34,7 @@ var filterMovesThatCauseMate = function(moves, whitePiece, chess) {
 		chess.doNotCheckForCheck = true
 		chess.makeMove(move, true)
 		var noKingRemains = _.find(_.flatten(chess.getFutureMoves()), function(futureMove) {
-			return !_.chain(futureMove.boardAfterMove).flatten().contains(pieceToLookFor).value()
+			return !_.chain(futureMove.boardAfterMove).flatten().includes(pieceToLookFor).value()
 		})
 		chess.undoMove(true)
 		chess.doNotCheckForCheck = false
@@ -154,7 +154,7 @@ var getKingMoves = function(position, piece, chess, whitePiece) {
 				return move.position
 			})
 			.filter(function(position) {
-				return _.findWhere(positions, position) != undefined
+				return _.find(positions, position) != undefined
 			})
 			.value().length > 0
 		chess.turnOfWhite = whitePiece

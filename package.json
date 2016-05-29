@@ -4,6 +4,8 @@
   "description": "JavaScript chess rules library",
   "main": "index.js",
   "scripts": {
+    "minify": "uglifyjs index.js -c \"evaluate=false\" --comments \"/    .*/\" -m",
+    "build": "npm run minify -- --source-map jschessrulz-min.map --source-map-url \" \" -o jschessrulz-min.js",
     "test": "mocha --compilers js:babel-core/register",
     "sloc": "sloc . -e node_modules"
   },
@@ -23,7 +25,7 @@
   },
   "homepage": "https://github.com/Humakt83/jschessrulz#readme",
   "dependencies": {
-    "lodash": "^3.10.1"
+    "lodash": "^4.13.1"
   },
   "devDependencies": {
     "babel": "^6.3.26",
@@ -32,7 +34,8 @@
     "browserify": "^12.0.1",
     "chai": "^3.4.1",
     "mocha": "^2.3.4",
-    "sloc": "^0.1.10"
+    "sloc": "^0.1.10",
+    "uglify-js": "^2.6.2"
   },
   "browserify": {
     "transform": [

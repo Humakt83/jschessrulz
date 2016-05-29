@@ -119,7 +119,7 @@ class Chess {
 	}
 		
 	castlingMoveMadeOfType(moveType) {
-		return this.madeMoves.length > 0 && _.contains(_.last(this.madeMoves).castlingState.blockers, moveType)
+		return this.madeMoves.length > 0 && _.includes(_.last(this.madeMoves).castlingState.blockers, moveType)
 	}
 			
 	isPositionInsideBoard(position) {
