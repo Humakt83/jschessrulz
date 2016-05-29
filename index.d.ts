@@ -1,10 +1,44 @@
-export interface Move {}
+export class Move {
 
-export interface Chess {
+    constructor(piece: number, oldPosition: Position, newPosition: Position, chess: Chess, effect: any);
+    
+    piece: number;
+    
+	originalPosition: Position;
+    
+	position: Position;
+    
+	boardBeforeMove: number[][];
+    
+	boardAfterMove: number[][];
+    
+	effect: any;
+    
+	castlingState: any;
+    
+}
+
+export class Chess {
+
+    constructor();
+    
+    board: number[][];
+    
+    selected: Position;
+    
+    turnOfWhite: boolean;
+    
+    madeMoves: Move[];
+	
+    aiTurn: boolean;
+    
+    allowedMoves: Move[];
+    
+    doNotCheckForCheck: boolean;
 
     getSlot(position: Position): number;
     
-    pawnIsLeveled: boolean;
+    pawnIsLeveled(): boolean;
     
     movePiece(from: Position, to: Position): void;
     
@@ -12,9 +46,9 @@ export interface Chess {
     
     makeAIMove(board: number[][]): void;
     
-    getFutureMoves: Move[];
+    getFutureMoves(): Move[];
     
-    setAllowedMoves: void;
+    setAllowedMoves(): void;
     
     boardAfterMove(from: Position, to: Position): number[][];
     
@@ -30,37 +64,43 @@ export interface Chess {
     
     undoMove(doNotSetMoves: boolean): void;
     
-    getWhitePieces: number[];
+    getWhitePieces(): number[];
     
-    getBlackPieces: number[];
+    getBlackPieces(): number[];
     
-    isStaleMate: boolean;
+    isStaleMate(): boolean;
     
-    isCheckMate: boolean;
+    isCheckMate(): boolean;
     
-    isInsufficientMaterial: boolean;
+    isInsufficientMaterial(): boolean;
     
-    isThreefoldRepetition: boolean;
+    isThreefoldRepetition(): boolean;
     
-    isOverMoveLimit: boolean;
+    isOverMoveLimit(): boolean;
     
-    isGameOver: boolean;
+    isGameOver(): boolean;
     
     setSelected(x: number, y: number): void;
     
-    getCastlingState: any;
+    getCastlingState(): any;
     
-    getGameResultForCheckMate: any;
+    getGameResultForCheckMate(): any;
     
 }
 
-export interface Position {
+export class Position {
+
+    constructor(x: number, y: number);
+        
+    x: number;
+    
+    y: number;
         
     newPosition(xModifier: number, yModifier: number): Position;
-    
+
 }
 
-export interface ChessPiece {
+export interface Piece {
     
     createPawn(whitePiece: boolean) : number;
     
