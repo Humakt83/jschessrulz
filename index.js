@@ -1,6 +1,5 @@
 'use strict'
 
-import _ from 'lodash'
 import ChessPiece from './pieces'
 import Position from './position'
 
@@ -44,13 +43,13 @@ class Chess {
 	}
 		
 	pawnIsLeveled() {
-		var position = _.last(this.madeMoves).position
+		var position = this.madeMoves[madeMoves.length -1].position
 		var queen = this.turnOfWhite ? 5 : - 5
 		this.board[position.y][position.x] = queen
 	}
 		
 	movePiece(from, to) {
-		var move = _.find(this.allowedMoves, function(move) {
+		var move = this.allowedMoves.find(move => {
 			return move.position.x === to.x && move.position.y === to.y
 				&& move.originalPosition.x === from.x && move.originalPosition.y === from.y
 		})
@@ -67,7 +66,7 @@ class Chess {
 	}
 
 	makeAIMove(board) {
-		let previousBoard = this.madeMoves.length > 0 ? _.last(this.madeMoves).boardAfterMove : null
+		let previousBoard = this.madeMoves.length > 0 ? this.madeMoves[this.madeMoves.length -1].boardAfterMove : null
 		this.madeMoves.push({
 			originalPosition: board.lastMove.original,
 			position: board.lastMove.position,
@@ -105,21 +104,24 @@ class Chess {
 				}
 			}
 		}		
-		this.selected = undefined
-		this.allowedMoves = _.compact(_.flatten(this.allowedMoves))		
+		this.selected = undefined	
 	}
 		
 	boardAfterMove(from, to) {
-		if (to.y > yMax || to.x > xMax || to.y < 0 || to.x < 0) return
-		var copyBoard = _.clone(this.board)
-		for (var x = 0; x <= xMax; x++) { copyBoard[x] = _.clone(this.board[x])}
+		if (!this.isPositionInsideBoard(from) || !this.isPositionInsideBoard(to)) return
+		var copyBoard = this.board.slice()
+		for (var x = 0; x <= xMax; x++) { 
+			for (var y = 0; y <= yMax; y++) { 
+				copyBoard[y][x] = this.board[y][x]
+			}
+		}
 		copyBoard[to.y][to.x] = copyBoard[from.y][from.x]
-		copyBoard[from.y][from.x] = 0			
+		copyBoard[from.y][from.x] = 0	
 		return copyBoard
 	}
 		
 	castlingMoveMadeOfType(moveType) {
-		return this.madeMoves.length > 0 && _.includes(_.last(this.madeMoves).castlingState.blockers, moveType)
+		return this.madeMoves.length > 0 && this.madeMoves[this.madeMoves.length -1].castlingState.blockers.indexOf(moveType) !== -1
 	}
 			
 	isPositionInsideBoard(position) {
@@ -127,33 +129,28 @@ class Chess {
 	}
 		
 	getPieces(whitePieces) {
-		return _.chain(this.board).flatten().flatten().filter(function(slot) {
-				return (slot > 0 && whitePieces) || (slot < 0 && !whitePieces)
-			}).sort().reverse().value()
+		return this.board.reduce((a, b) => a.concat(b)).reduce((a, b) => a.concat(b))
+			.filter((slot) => (slot > 0 && whitePieces) || (slot < 0 && !whitePieces))
+			.sort()
+			.reverse()
 	}
 		
 	isMovable(x, y) {
 		if (this.selected) {
 			var sel = this.selected
-			return _.find(this.allowedMoves, function(move) {
-				return move.originalPosition.x === sel.x && move.originalPosition.y === sel.y
-					&& move.position.x === x && move.position.y === y
-			})
+			return this.allowedMoves.find(move => move.originalPosition.x === sel.x && move.originalPosition.y === sel.y
+					&& move.position.x === x && move.position.y === y)
 		}
-		return _.find(this.allowedMoves, function(move) {
-			return move.originalPosition.x === x && move.originalPosition.y === y
-		})
+		return this.allowedMoves.find(move => move.originalPosition.x === x && move.originalPosition.y === y)
 	}
 		
 	canSetSelected(x, y) {
-		var movable = _.find(this.allowedMoves, function(move) {
-			return move.originalPosition.x === x && move.originalPosition.y === y
-		})
+		var movable = this.allowedMoves.find(move => move.originalPosition.x === x && move.originalPosition.y === y)
 		return movable && ((this.turnOfWhite && this.board[y][x] > 0) || (!this.turnOfWhite && this.board[y][x] < 0))
 	}
 		
 	undoMove(doNotSetMoves) {
-		this.board = _.last(this.madeMoves).boardBeforeMove
+		this.board = this.madeMoves[this.madeMoves.length -1].boardBeforeMove
 		this.madeMoves.pop()
 		this.turnOfWhite = !this.turnOfWhite
 		if (!doNotSetMoves) this.setAllowedMoves()
@@ -177,38 +174,29 @@ class Chess {
 		let futureMoves = this.getFutureMoves()
 		this.turnOfWhite = !this.turnOfWhite
 		let kingToFind = this.turnOfWhite ? 6 : -6
-		let noKing = _.chain(futureMoves)
-			.flatten()
-			.map(function(move) {
-				return move.boardAfterMove
-			})
-			.map(function(board) {
-				return _.reduce(board, function(a, b) {
-					return a.concat(b)
-				})
-			})
-			.filter(function(board) { 
-				return !_.find(board, function(piece) { return kingToFind == piece })
-			})
-			.value().length > 0
+		let noKing = futureMoves
+			.map(move => move.boardAfterMove)
+			.map(board => board && board.reduce((a, b) => a.concat(b)))
+			.find(piece => kingToFind == piece) === undefined
 		return noKing && this.allowedMoves.length <= 0
 	}
 	
 	isInsufficientMaterial() {
 		function hasEnoughMaterial(pieces) {
-			return Math.abs(_.sum(pieces)) >= 10 || _.find(pieces, function(piece) { return piece === 1 || piece === -1 })
+			return Math.abs(pieces.reduce((a, b) => a + b)) >= 10 || pieces.find(piece => piece === 1 || piece === -1)
 		}
 		return !(hasEnoughMaterial(this.getWhitePieces()) || hasEnoughMaterial(this.getBlackPieces()))
 	}
 	
 	isThreefoldRepetition() {
 		if (this.madeMoves.length < 9) return false
-		return _.chain(this.madeMoves)
+		return false;
+		/**return _.chain(this.madeMoves)
 			.takeRight(10)
 			.map(function(madeMove) { return madeMove.boardAfterMove})
 			.countBy(_.identity)
 			.includes(3)
-			.value()
+			.value()**/
 	}
 	
 	isOverMoveLimit() {
@@ -225,7 +213,7 @@ class Chess {
 	
 	getCastlingState() {
 		if (this.madeMoves.length > 0) {
-			let previousMove = _.last(this.madeMoves)
+			let previousMove = this.madeMoves[this.madeMoves.length -1]
 			if (!previousMove.castlingState) previousMove.castlingState = {blockers:[]}
 			return previousMove.castlingState
 		}
@@ -234,7 +222,7 @@ class Chess {
 	
 	getGameResultForCheckMate() {
 		let winnerIsWhite = !this.turnOfWhite
-		let boardStates = _.map(this.madeMoves, function(madeMove) { return madeMove.boardAfterMove })
+		let boardStates = this.madeMoves.map(madeMove => madeMove.boardAfterMove )
 		return { 'winnerIsWhite': winnerIsWhite, 'boardStates' : boardStates }
 	}
 }

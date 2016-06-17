@@ -4,8 +4,9 @@
   "description": "JavaScript chess rules library",
   "main": "index.js",
   "scripts": {
-    "minify": "uglifyjs index.js -c \"evaluate=false\" --comments \"/    .*/\" -m",
-    "build": "npm run minify -- --source-map jschessrulz-min.map --source-map-url \" \" -o jschessrulz-min.js",
+    "babelify": "browserify index.js -o dist/jschessrulz.js -t [ babelify --presets [ es2015 ] ]",
+    "minify": "npm run babelify && uglifyjs dist/jschessrulz.js -d \"_\" -c \"evaluate=false\" --comments \"/    .*/\" -m",
+    "build": "npm run minify -- --source-map dist/jschessrulz.min.map --source-map-url \" \" -o dist/jschessrulz.min.js",
     "test": "mocha --compilers js:babel-core/register",
     "sloc": "sloc . -e node_modules"
   },
@@ -24,9 +25,6 @@
     "url": "https://github.com/Humakt83/jschessrulz/issues"
   },
   "homepage": "https://github.com/Humakt83/jschessrulz#readme",
-  "dependencies": {
-    "lodash": "^4.13.1"
-  },
   "devDependencies": {
     "babel": "^6.3.26",
     "babel-preset-es2015": "^6.3.13",

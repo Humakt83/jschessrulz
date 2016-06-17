@@ -1,6 +1,5 @@
 'use strict'
 
-import _ from 'lodash'
 const cssNames = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king']
 
 function Move(piece, oldPosition, newPosition, chess, effect) {
@@ -14,36 +13,42 @@ function Move(piece, oldPosition, newPosition, chess, effect) {
 }
 
 var filterOutOfBoardMoves = function(moves, chess) {
-	return _.compact(_.filter(moves, function(move) {
-		return chess.isPositionInsideBoard(move.position ? move.position : move)
-	}))
+	return moves.filter(move => chess.isPositionInsideBoard(move.position ? move.position : move))
 }
 
 var filterMovesThatCollideWithOwnPiece = function(moves, whitePiece, chess) {
-	return _.compact(_.filter(moves, function(move) {
+	return moves.filter(move => {
 		var slot = chess.getSlot(move.position)
 		return !((whitePiece && slot > 0) || (!whitePiece && slot < 0))
-	}))
+	})
 }
 
 var filterMovesThatCauseMate = function(moves, whitePiece, chess) {
 	if (chess.aiTurn) return moves
 	var pieceToLookFor = whitePiece ? 6 : -6
-	return _.compact(_.filter(moves, function(move) {
+	return moves.filter(move => {
 		if (chess.doNotCheckForCheck) return true
 		chess.doNotCheckForCheck = true
 		chess.makeMove(move, true)
-		var noKingRemains = _.find(_.flatten(chess.getFutureMoves()), function(futureMove) {
-			return !_.chain(futureMove.boardAfterMove).flatten().includes(pieceToLookFor).value()
-		})
+		let futureMoves = chess.getFutureMoves();
+		let noKingRemains = true
+		if(futureMoves.length > 1) {
+			noKingRemains = chess.getFutureMoves()
+				.reduce((a, b) => a.concat(b))
+				.map(futureMove => futureMove.boardAfterMove)
+				.filter(boardAfterMove => {
+					console.log(boardAfterMove)
+					return boardAfterMove.indexOf(pieceToLookFor) !== -1
+			}).length < 1
+		}
 		chess.undoMove(true)
 		chess.doNotCheckForCheck = false
-		return noKingRemains === undefined
-	}))
+		return noKingRemains === undefined || !noKingRemains
+	})
 }
 
 var filterIllegalMoves = function(moves, whitePiece, chess) {
-	return _.compact(filterMovesThatCauseMate(filterMovesThatCollideWithOwnPiece(filterOutOfBoardMoves(moves, chess), whitePiece, chess), whitePiece, chess))
+	return filterMovesThatCauseMate(filterMovesThatCollideWithOwnPiece(filterOutOfBoardMoves(moves, chess), whitePiece, chess), whitePiece, chess)
 }
 
 var getMovesUntilBlocked = function(chess, position, xModifier, yModifier, pieceBeingMoved) {
@@ -99,12 +104,12 @@ var getPawnMoves = function(position, pieceBeingMoved, chess, whitePiece) {
 	}
 	function handleDiagonalAttacks(moves, sign) {
 		var diagonalAttacks = [position.newPosition(-1, sign), position.newPosition(1, sign)]
-		_.each(filterOutOfBoardMoves(diagonalAttacks, chess), function (attack) {
+		filterOutOfBoardMoves(diagonalAttacks, chess).forEach(attack => {
 			var piece = chess.getSlot(attack)
 			if ((piece < 0 && whitePiece ) || (piece > 0 && !whitePiece )) {
 				moves.push(new Move(pieceBeingMoved, position, attack, chess, addLevelupForMove(attack)))
-			} else if (chess.madeMoves.length > 0 && _.last(chess.madeMoves).pawnDoubleForward) {
-				var previousMove = _.last(chess.madeMoves)
+			} else if (chess.madeMoves.length > 0 && chess.madeMoves[chess.madeMoves.length -1].pawnDoubleForward) {
+				var previousMove = chess.madeMoves[chess.madeMoves.length -1]
 				if (previousMove.position.y === position.y && previousMove.position.x === attack.x) {
 					moves.push(new Move(pieceBeingMoved, position, attack, chess, function() {
 						chess.board[previousMove.position.y][previousMove.position.x] = 0
@@ -131,12 +136,14 @@ var getKnightMoves = function(position, piece, chess) {
 }
 
 var getRookMoves = function(position, piece, chess) {
-	return _.chain(horizontalAndVerticalMoves(chess, position, piece)).each(function(move) {
+	let moves = horizontalAndVerticalMoves(chess, position, piece)
+	moves.forEach(move => {
 		let moveType
 		if (piece > 0) moveType = position.x === 0 ? 'WHITE_LEFT_ROOK_MOVED' : 'WHITE_RIGHT_ROOK_MOVED'
 		else moveType = position.x === 0 ? 'BLACK_LEFT_ROOK_MOVED' : 'BLACK_RIGHT_ROOK_MOVED'
 		move.castlingState.blockers.push(moveType)
-	}).value()
+	})
+	return moves;
 }
 
 var getQueenMoves = function(position, piece, chess) {
@@ -148,15 +155,10 @@ var getKingMoves = function(position, piece, chess, whitePiece) {
 	var positionCanBeReachedByEnemy = function(positions) {
 		chess.turnOfWhite = !whitePiece
 		chess.doNotCheckForCheck = true
-		let canBeReached = _.chain(chess.getFutureMoves())
-			.flatten()
-			.map(function(move) { 
-				return move.position
-			})
-			.filter(function(position) {
-				return _.find(positions, position) != undefined
-			})
-			.value().length > 0
+		let canBeReached = chess.getFutureMoves()
+			.map(move => move.position)
+			.find(position => positions.find(p => position === p) != undefined
+			) !== undefined
 		chess.turnOfWhite = whitePiece
 		chess.doNotCheckForCheck = false
 		return canBeReached
@@ -193,7 +195,7 @@ var getKingMoves = function(position, piece, chess, whitePiece) {
 		new Move(piece, position, position.newPosition(1,0), chess), new Move(piece, position, position.newPosition(-1,0), chess),
 		new Move(piece, position, position.newPosition(1,1), chess), new Move(piece, position, position.newPosition(-1,-1), chess), 
 		new Move(piece, position, position.newPosition(1,-1), chess), new Move(piece, position, position.newPosition(-1,1), chess)])
-	_.each(moves, function(move) { move.castlingState.blockers.push(whitePiece ? 'WHITE_KING_MOVED' : 'BLACK_KING_MOVED')})
+	moves.forEach(move => move.castlingState.blockers.push(whitePiece ? 'WHITE_KING_MOVED' : 'BLACK_KING_MOVED'))
 	return moves
 }
 
