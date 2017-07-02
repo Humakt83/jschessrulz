@@ -3,15 +3,15 @@
 # jschessrulz
 JavaScript chess rules library
 
-###Requirements
+### Requirements
 Node.js (https://nodejs.org/en/)
 
 Note that jschessrulz is written with some es2015 features, so your project's build system has to be able to handle those.
 
-###Installation
+### Installation
 npm install jschessrulz --save
 
-###Usage
+### Usage
 
 import or require jschessrulz in your js-file
 
